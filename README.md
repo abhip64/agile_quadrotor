@@ -7,7 +7,7 @@ this package is to provide a platform for testing out various trajectory generat
 effectvely executing a manuever. More details about the working of each component of the algorithm is discussed in detail
 in the wiki section of the project. Special mention is required for the package by Jaeyoung-Lim https://github.com/Jaeyoung-Lim/mavros_controllers. 
 
-## Specifications
+## System Specifications
 The simulation platform was designed and tested in the following work environment:
 * Ubuntu 16.04 running on a system with Intel Core i7 CPU @ 2.20GHz × 8 and 8GB RAM
 * ROS Kinetic

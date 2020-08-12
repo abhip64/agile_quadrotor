@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>agile_quad</name>
+  <name>external_control</name>
   <version>0.0.0</version>
-  <description>The agile_quad package</description>
+  <description>The external_control package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/agile_quad</url> -->
+  <!-- <url type="website">http://wiki.ros.org/external_control</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -49,10 +49,8 @@
   <!-- Use doc_depend for packages you need only for building documentation: -->
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
-  <build_depend>apriltag_ros</build_depend>
   <build_depend>control_msgs</build_depend>
   <build_depend>geometry_msgs</build_depend>
-  <build_depend>mav_trajectory_generation</build_depend>
   <build_depend>mavlink</build_depend>
   <build_depend>mavros</build_depend>
   <build_depend>mavros_extras</build_depend>
@@ -61,10 +59,8 @@
   <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
   <build_depend>tf</build_depend>
-  <build_export_depend>apriltag_ros</build_export_depend>
   <build_export_depend>control_msgs</build_export_depend>
   <build_export_depend>geometry_msgs</build_export_depend>
-  <build_export_depend>mav_trajectory_generation</build_export_depend>
   <build_export_depend>mavlink</build_export_depend>
   <build_export_depend>mavros</build_export_depend>
   <build_export_depend>mavros_extras</build_export_depend>
@@ -73,10 +69,8 @@
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>tf</build_export_depend>
-  <exec_depend>apriltag_ros</exec_depend>
   <exec_depend>control_msgs</exec_depend>
   <exec_depend>geometry_msgs</exec_depend>
-  <exec_depend>mav_trajectory_generation</exec_depend>
   <exec_depend>mavlink</exec_depend>
   <exec_depend>mavros</exec_depend>
   <exec_depend>mavros_extras</exec_depend>
