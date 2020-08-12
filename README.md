@@ -22,21 +22,13 @@ ROS installation is done by following the steps given in http://wiki.ros.org/kin
 
 ```shell
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-```
 
-```shell
 sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-``` 
 
-```shell
 curl -sSL 'http://keyserver.ubuntu.com/pks/lookup?op=get&search=0xC1CF6E31E6BADE8868B172B4F42ED6FBAB17C654' | sudo apt-key add -
-```
 
-```shell
 sudo apt-get update
-```
 
-```shell
 sudo apt-get install ros-kinetic-desktop-full
 ```
 
@@ -47,13 +39,9 @@ source ~/.bashrc
 
 ```shell
 sudo apt install python-rosdep python-rosinstall python-rosinstall-generator python-wstool build-essential
-```
 
-```shell
 sudo apt install python-rosdep
-```
 
-```shell
 sudo rosdep init
 rosdep update
 ```
@@ -62,17 +50,12 @@ Now for setting up Catkin build environment for building the ROS package, the in
 
 ```shell
 sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list'
-``` 
 
-```shell
 wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
-```
 
-```shell
 sudo apt-get update
-```
 
-```shell
+
 sudo apt-get install python-catkin-tools
 ```
 
