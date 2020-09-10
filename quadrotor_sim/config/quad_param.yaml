@@ -1,0 +1,13 @@
+# YAML file created to load essnetial parameters when the simulation starts
+# https://roboticsbackend.com/ros-param-yaml-format/
+
+#Control the frequency at which control inputs are passed to PX4
+control_loop_freq : 100
+
+#Initial Take-Off Height
+take_off_height : 5
+
+#To select which controller to be executed. New controllers can be added in the external_control package.
+#For details on adding the controller check out the wiki
+select_controller : 1
+

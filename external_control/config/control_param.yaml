@@ -1,0 +1,31 @@
+# YAML file created to load essential parameters when the simulation starts
+# This file focusses on the loading of the controller parameters such as control gains of the controller
+# https://roboticsbackend.com/ros-param-yaml-format/
+
+#Maximum feedback acceleration
+max_fb_acc : 5.0
+
+#Thrust scaling factor
+thrust_scaling_factor : 0.04
+
+#############################################################################################################
+#CONTROLLER 1 - GEOMETRIC CONTROLLER
+
+###CONTROL GAINS
+#Position Control Gains
+Kp_x : 15.0
+Kp_y : 15.0
+Kp_z : 15.0
+
+#Velocity Control Gains
+Kv_x : 10.0
+Kv_y : 10.0
+Kv_z : 10.0
+
+#Rotation Matrix Error Gain
+Kr : 14.0
+
+#Angular Velocity Error Gain
+Kw : 0.3 
+
+#############################################################################################################

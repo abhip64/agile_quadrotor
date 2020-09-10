@@ -1,0 +1,7 @@
+<launch>
+
+  <node pkg="maneuvers" type="trajectory_generator" name="trajectory_generator" output="screen">
+      <rosparam command="load" file="$(find maneuvers)/config/maneuver_param.yaml"/>
+  </node>
+
+</launch>

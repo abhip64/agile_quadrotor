@@ -1,0 +1,43 @@
+# YAML file created to load essential parameters when the simulation starts
+# This file is used to select the required maneuver to execute
+# https://roboticsbackend.com/ros-param-yaml-format/
+
+#########################################################################################################
+# These are the different maneuvers that are available for execution. The procedure for adding more 
+# maneuvers will be explained in the wiki.
+# Circle             - 0
+# Slit Traversal     - 1
+# Flip               - 2
+# UGV Track          - 3
+# UGV Track and Land - 4
+
+maneuver_select : 0
+#########################################################################################################
+
+#########################################################################################################
+# Circle Maneuver
+
+# Radius of the circular trajectory
+circle_radius : 1
+
+# Angular Velocity along the trajectory
+circle_angvel : 1
+
+# Number of Revolutions to be executed
+circle_rev    : 5
+#########################################################################################################
+# Slit Traversal Maneuver
+
+# Roll angle associated with the slit
+gap_roll : 30
+
+# Pitch angle associated with the slit
+gap_pitch : 0
+
+
+
+
+
+
+
+
