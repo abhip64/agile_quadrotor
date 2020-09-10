@@ -58,7 +58,9 @@ void circle_traverse::trajectory_generator(double time)
 
   target_angvel        = calculate_trajectory_angvel();
 
-  target_yaw           = 0.0;
+  target_yaw           = atan2(target_position(1),target_position(0)) - M_PI/2.0;
+
+  //target_yaw = 0.0;
 }
 
 Eigen::Vector3d circle_traverse::calculate_trajectory_angvel()

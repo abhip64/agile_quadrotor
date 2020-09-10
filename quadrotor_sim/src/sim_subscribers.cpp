@@ -31,7 +31,7 @@ void quadrotor_sim::trajectorytargetCallback(const control_msg::TargetTrajectory
 //trajectory node.
 void quadrotor_sim::typeCallback(const std_msgs::Int8& msg)
 {
-  controller_type = int(msg.data);  
+  controller_type = int(msg.data); 
 }
 
 

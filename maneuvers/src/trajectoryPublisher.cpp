@@ -18,7 +18,7 @@ using namespace Eigen;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
   nh_(nh),
-  motion_selector_(0),publish_data(0){
+  motion_selector_(1),publish_data(0){
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PUBLISHER DEFINITION
@@ -119,9 +119,11 @@ void trajectoryPublisher::updateReference() {
     w_targ   = maneuver_select->get_target_angvel();
     a_targ   = maneuver_select->get_target_acc();
     yaw_targ = maneuver_select->get_target_yaw();
+
+    motion_selector_ = 1;
   }
   else
-    motion_selector_ = 1;
+    motion_selector_ = 0;
 }
 
 void trajectoryPublisher::pubflatrefState(){
@@ -170,9 +172,9 @@ void trajectoryPublisher::refCallback(const ros::TimerEvent& event){
   {
     updateReference();
 
-    if(motion_selector_ == 0)
+    if(motion_selector_)
       pubflatrefState();
-    else if(motion_selector_ == 2)
+    else
       typepublish();
   }
 }

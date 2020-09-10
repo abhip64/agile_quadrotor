@@ -109,6 +109,7 @@ quadrotor_sim::quadrotor_sim(const ros::NodeHandle& nh):
   mavPos_    << 0.0, 0.0, 0.0;
   mavVel_    << 0.0, 0.0, 0.0;
 
+  controller_type = 1;
 //Assigning the controller based on the requirement
   //if(exec_cont == 0)
   //control_tech = std::make_shared<eth_controller>(nh_);
@@ -177,14 +178,21 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
   //Trajectory tracking happens here. The controller mode of operation is selected here
   case MISSION_EXECUTION:
   {
-    Eigen::Vector3d pos_error;
-    Eigen::Vector3d vel_error;
+    if(controller_type)
+    {
+      Eigen::Vector3d pos_error;
+      Eigen::Vector3d vel_error;
 
-    pos_error    = mavPos_ - targetPos_;
-    vel_error    = mavVel_ - targetVel_;
-    cmdBodyRate_ = control_tech->calculate_control_fb(pos_error, vel_error, mavRate_, targetW_, targetAcc_, targetYaw_, mavAtt_, q_des);
-   
+      pos_error    = mavPos_ - targetPos_;
+      vel_error    = mavVel_ - targetVel_;
+      cmdBodyRate_ = control_tech->calculate_control_fb(pos_error, vel_error, mavRate_, targetW_, targetAcc_, targetYaw_, mavAtt_, q_des);
+    }
+    else
+    {
+      node_state = LANDING;
+    }
     pubRateCommands(cmdBodyRate_);
+
     break;
   }
   //Initiate landing phase
@@ -193,17 +201,19 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
     geometry_msgs::PoseStamped landingmsg;
     landingmsg.header.stamp = ros::Time::now();
     landingmsg.pose = home_pose_;
-    landingmsg.pose.position.z = landingmsg.pose.position.z + 1.0;
+    landingmsg.pose.position.z += 5; 
     target_posePub_.publish(landingmsg);
-    node_state = LANDED;
+    
+    if((abs(mavPos_[2]-landingmsg.pose.position.z)<0.01))
+    {
+      node_state = LANDED;   
+      statusloop_timer_.stop();
+      offb_set_mode_.request.custom_mode = "AUTO.LAND";
+      if( set_mode_client_.call(offb_set_mode_) && offb_set_mode_.response.mode_sent){
+      ROS_INFO("Landing Mode enabled");
+      }
+    }
     ros::spinOnce();
-    break;
-  }
-  //Check if quadrotor has landed. If landed then mission is complete and the control loop is disabled
-  case LANDED:
-  { 
-    ROS_INFO("Landed. Please set to position control and disarm.");
-    cmdloop_timer_.stop();
     break;
   }
   }

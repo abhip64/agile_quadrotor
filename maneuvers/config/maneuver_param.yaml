@@ -24,7 +24,7 @@ circle_radius : 1
 circle_angvel : 1
 
 # Number of Revolutions to be executed
-circle_rev    : 5
+circle_rev    : 3
 #########################################################################################################
 # Slit Traversal Maneuver
 
