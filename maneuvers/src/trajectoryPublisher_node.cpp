@@ -1,8 +1,8 @@
 
-#include "quad_perch/trajectoryPublisher.h"
+#include "maneuvers/trajectoryPublisher.h"
 
 int main(int argc, char **argv) {
-    ros::init(argc, argv, "vehicle_track_traj");
+    ros::init(argc, argv, "trajectory_generator");
     ros::NodeHandle nh("");
 
     trajectoryPublisher referencePublisher(nh);

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(quadrotor_sim)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+ add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -12,6 +12,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  mavros
+  mavros_extras
+  mavros_msgs
+  control_msg
 )
 
 ## System dependencies are found with CMake's conventions
@@ -104,10 +108,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES quadrotor_sim
-#  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES quadrotor_sim
+  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs mavros mavros_msgs mavros_extras
 )
 
 ###########
@@ -117,10 +120,11 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
+  ${Boost_INCLUDE_DIR}
   ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
 )
-
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
 #   src/${PROJECT_NAME}/quadrotor_sim.cpp
@@ -205,3 +209,17 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+add_executable(quadrotor_sim
+        src/quad_sim.cpp
+        src/math_operations.cpp
+        src/sim_node.cpp
+        src/sim_publishers.cpp
+        src/sim_subscribers.cpp
+        src/controllers/controller_class.cpp
+        src/controllers/upenn_controller.cpp
+)
+
+
+add_dependencies(quadrotor_sim ${catkin_EXPORTED_TARGETS})
+target_link_libraries(quadrotor_sim ${catkin_LIBRARIES})
+

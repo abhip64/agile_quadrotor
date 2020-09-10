@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.0.2)
 project(maneuvers)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
-# add_compile_options(-std=c++11)
+add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
@@ -11,7 +11,6 @@ find_package(catkin REQUIRED COMPONENTS
   control_msgs
   geometry_msgs
   mav_trajectory_generation
-  mavlink
   mavros
   mavros_extras
   mavros_msgs
@@ -111,10 +110,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
-#  LIBRARIES maneuvers
-#  CATKIN_DEPENDS control_msgs geometry_msgs mav_trajectory_generation mavlink mavros mavros_extras mavros_msgs roscpp rospy std_msgs tf
-#  DEPENDS system_lib
+  INCLUDE_DIRS include
+  LIBRARIES maneuvers
+  CATKIN_DEPENDS control_msgs geometry_msgs mav_trajectory_generation mavros mavros_extras mavros_msgs roscpp rospy std_msgs tf
 )
 
 ###########
@@ -124,8 +122,10 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
+  ${Boost_INCLUDE_DIR}
   ${catkin_INCLUDE_DIRS}
+  ${Eigen_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
@@ -212,3 +212,13 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+add_executable(trajectory_generator
+        src/trajectoryPublisher_node.cpp
+        src/trajectoryPublisher.cpp
+        src/trajectory_class.cpp
+        src/circle_maneuver.cpp
+)
+
+
+add_dependencies(trajectory_generator ${catkin_EXPORTED_TARGETS})
+target_link_libraries(trajectory_generator ${catkin_LIBRARIES})

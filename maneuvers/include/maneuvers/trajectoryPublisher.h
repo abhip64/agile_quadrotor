@@ -9,8 +9,6 @@
 #include <sstream>
 #include <Eigen/Dense>
 
-#include "quad_perch/math_operations.h"
-
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <std_msgs/Int32.h>
@@ -20,14 +18,13 @@
 #include <std_srvs/SetBool.h>
 #include <nav_msgs/Path.h>
 #include <mavros_msgs/PositionTarget.h>
-#include "control_msgs/FlatTarget.h"
-#include "control_msgs/RollPitchTarget.h"
-#include "quad_perch/eth_trajectory.h"
-#include "apriltag_ros/AprilTagDetectionArray.h"
+#include "control_msg/TargetTrajectory.h"
 #include "geometry_msgs/PoseWithCovarianceStamped.h"
-#include "geometry_msgs/AccelWithCovarianceStamped.h"
 #include "geometry_msgs/PoseWithCovariance.h"
 #include "nav_msgs/Odometry.h"
+
+#include "maneuvers/trajectory_class.h"
+#include "maneuvers/circle_maneuver.h"
 
 using namespace std;
 using namespace Eigen;
@@ -35,63 +32,52 @@ using namespace Eigen;
 class trajectoryPublisher
 {
 private:
+
   ros::NodeHandle nh_;
 
   ros::Publisher trajectoryPub_;
 
-  ros::Publisher flatreferencePub_;
+  ros::Publisher desired_trajPub_;
 
-  ros::Publisher controllertype_, anglePub_ ;
+  ros::Publisher controllertype_;
 
-  ros::Subscriber mavposeSub_, vehicle_pos_Sub_, mavtwistSub_, accelSub_;
+  ros::Subscriber mavposeSub_, mavtwistSub_;
 
   ros::ServiceServer trajtriggerServ_;
   ros::Timer trajloop_timer_;
   ros::Timer refloop_timer_;
-  ros::Time start_time_, curr_time_, time_to_land;
+  ros::Time start_time_;
 
-  Eigen::Vector3d p_targ, v_targ, a_targ, w_targ, mavPos_, mavVel_;
+  Eigen::Vector3d p_targ, v_targ, a_targ, w_targ;
 
-  Eigen::Vector4d mavAtt_, vehAtt_;
+  double yaw_targ;
 
-  Eigen::Vector3d vehPos_, vehVel_, vehAcc_, vehPos_future, vehVel_future;
+  Eigen::Vector3d mavPos_, mavVel_;
+
+  Eigen::Vector4d mavAtt_;
 
   double trigger_time_;
+  double T;
 
   int motion_selector_;
 
+  int maneuver_type_select;
+
   bool publish_data;
-  
-  std::vector<Eigen::Vector3d> position_;
-  std::vector<Eigen::Vector3d> velocity_;
 
-  std::vector<float> T;
-
-  int image_id;
-
-//This is due to the discrepancy in velocity and position direction which is the output of kalman filter package
-  float yaw;
-
-  float circle_theta;
+  std::shared_ptr<trajectory_class> maneuver_select;
 
 public:
   trajectoryPublisher(const ros::NodeHandle& nh);
+  
   void updateReference();
-
   void pubflatrefState();
   void typepublish();
-  void anglerefState();
   void loopCallback(const ros::TimerEvent& event);
   void refCallback(const ros::TimerEvent& event);
   bool triggerCallback(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res);
   void mavposeCallback(const geometry_msgs::PoseStamped& );
-  void update_ugv_state(const nav_msgs::Odometry&);
-  //void image_pos_sub(const apriltag_ros::AprilTagDetectionArray&);
   void mavtwistCallback(const geometry_msgs::TwistStamped& );  
-  void accel_sub(const geometry_msgs::AccelWithCovarianceStamped& );
-  void future_state_predict(double,double);
-  void circle_future_state_predict(double,double);
-  void init_landing();
 
   };
 
