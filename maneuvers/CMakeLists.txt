@@ -217,6 +217,9 @@ add_executable(trajectory_generator
         src/trajectoryPublisher.cpp
         src/trajectory_class.cpp
         src/circle_maneuver.cpp
+        src/eth_trajectory.cpp
+        src/flip_maneuver.cpp
+        src/slit_maneuver.cpp
 )
 
 

@@ -6,7 +6,6 @@ EXECUTE THE CIRCULAR MANEUVER
 //HEADER FILES
 
 #include "maneuvers/circle_maneuver.h"
-#include <iostream>
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace std;
 using namespace Eigen;
@@ -39,15 +38,19 @@ circle_traverse::~circle_traverse() {
 }
 
 
-int circle_traverse::maneuver_init()
+double circle_traverse::maneuver_init()
 {
+  //The total execution time of the trajectory = Number of revolutions * Time Period of a single revolution
   return circle_rev*(2*M_PI/circle_ang_velocity);
 }
 
 void circle_traverse::trajectory_generator(double time)
 {
+  //Circular trajectory generation is quite straightforward and is done using the parametric equation of the circle.
   target_position     << circle_radius*sin(circle_ang_velocity*time), circle_radius*cos(circle_ang_velocity*time), circle_height;
   
+  //The velocity, acceleration and jerk along the trajectory can be appropriately obtained by differentiating the 
+  //parametric equation for position of the circle. 
   target_velocity     << cos(circle_ang_velocity*time), -sin(circle_ang_velocity*time), 0;
   target_velocity     *= circle_radius*circle_ang_velocity;
 
@@ -56,11 +59,22 @@ void circle_traverse::trajectory_generator(double time)
 
   target_jerk          = -target_velocity*circle_ang_velocity*circle_ang_velocity;
 
+  //The method of calculation of the angular velocity is described in detail in the github wiki. 
   target_angvel        = calculate_trajectory_angvel();
 
+  //Yaw is calculated to ensure that the quadrotor always aligns itself to the direction of motion. The front of
+  //the quadrotor is 90 degree offset from the 0 degree yaw direction of the controller. Thus an additional
+  //offset term is required.  
   target_yaw           = atan2(target_position(1),target_position(0)) - M_PI/2.0;
 
-  //target_yaw = 0.0;
+  //This parameter decides the mode of operation of the controller. The controller can work in 5 modes
+  //MODE 0 - IGNORE ALL TRAJECTORY TARGET INPUTS (POSITION, VELOCITY, ACCELERATION, ANGULAR VELOCITY, YAW)
+  //MODE 1 - ACCEPT ALL TRAJECTORY TARGET INPUTS FOR CONTROL OUTPUT CALCULATION
+  //MODE 2 - IGNORE ONLY POSITION FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
+  //MODE 3 - IGNORE ONLY VELOCITY FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
+  //MODE 4 - IGNORE POSITION AND VELOCITY FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
+  type = 1;
+
 }
 
 Eigen::Vector3d circle_traverse::calculate_trajectory_angvel()
@@ -80,9 +94,7 @@ Eigen::Vector3d circle_traverse::calculate_trajectory_angvel()
 
   zb = acc/u;
 
-////////////NEEDS UPDATE//////////////////////// 
-  xc << 1,0,0;
-///////////////////////////////////////////////
+  xc << cos(target_yaw),sin(target_yaw),0;
 
   yb = zb.cross(xc) / (zb.cross(xc)).norm();
   xb = yb.cross(zb) / (yb.cross(zb)).norm();
@@ -100,30 +112,42 @@ Eigen::Vector3d circle_traverse::calculate_trajectory_angvel()
 
 Eigen::Vector3d circle_traverse::get_target_pos()
 {
+  //Return the desired position
   return target_position;
 }
 
 Eigen::Vector3d circle_traverse::get_target_vel()
 {
+  //Return the desired velocity
   return target_velocity;
 }
 
 Eigen::Vector3d circle_traverse::get_target_acc()
 {
+  //Return the desired acceleration
   return target_acceleration;
 }
 
 Eigen::Vector3d circle_traverse::get_target_angvel()
 {
+  //Return the desired anguler velocity
   return target_angvel;
 }
 
 Eigen::Vector3d circle_traverse::get_target_jerk()
 {
+  //Return the desired jerk
   return target_jerk;
 }
 
 double circle_traverse::get_target_yaw()
 {
+  //Return the desired yaw
   return target_yaw;
+}
+
+int circle_traverse::get_type()
+{
+  //Return the desired mode of controller operation
+  return type;
 }

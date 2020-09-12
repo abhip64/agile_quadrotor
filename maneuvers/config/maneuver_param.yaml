@@ -11,7 +11,7 @@
 # UGV Track          - 3
 # UGV Track and Land - 4
 
-maneuver_select : 0
+maneuver_select : 1
 #########################################################################################################
 
 #########################################################################################################
@@ -25,18 +25,44 @@ circle_angvel : 1
 
 # Number of Revolutions to be executed
 circle_rev    : 3
+
+#Height at which to execute the manuever
+circle_height : 5
 #########################################################################################################
 # Slit Traversal Maneuver
 
 # Roll angle associated with the slit
-gap_roll : 30
+slit_roll : 30
 
 # Pitch angle associated with the slit
-gap_pitch : 0
+slit_pitch : 0
 
+slit_pos_x : 5.0
 
+slit_pos_y : 5.0 
 
+slit_pos_z : 12.0
 
+#########################################################################################################
+# Flip Maneuver
+
+# Velocity along x-direction in m/s at the start of flip
+flip_init_vel_x : 3
+
+# Velocity along y-direction in m/s at the start of flip
+flip_init_vel_y : 0
+
+# Constant thrust to weight magnitude to be mainteined during flip
+Tc              : 1.1
+
+# Height at which flip maneuver is started
+flip_height     : 10.0
+
+# X coordinate at which flip is performed
+flip_init_pos_x : 5.0
+
+# Y coordinate at which flip is performed
+flip_init_pos_y : 0.0
 
 
 

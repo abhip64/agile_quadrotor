@@ -39,7 +39,7 @@ quadrotor_sim::quadrotor_sim(const ros::NodeHandle& nh):
   //Reference Position, Velocity, Acceleration, Angular Velocity
   referenceTrajSub_   = nh_.subscribe("reference/setpoint", 100, &quadrotor_sim::trajectorytargetCallback, this, ros::TransportHints().tcpNoDelay());
   //Controller Type Selection
-  controllerTypeSub_   = nh_.subscribe("/trajectory/controller_type", 100, &quadrotor_sim::typeCallback, this, ros::TransportHints().tcpNoDelay());
+  //controllerTypeSub_   = nh_.subscribe("/trajectory/controller_type", 100, &quadrotor_sim::typeCallback, this, ros::TransportHints().tcpNoDelay());
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //SERVICES DEFINITION
@@ -183,8 +183,23 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
       Eigen::Vector3d pos_error;
       Eigen::Vector3d vel_error;
 
-      pos_error    = mavPos_ - targetPos_;
-      vel_error    = mavVel_ - targetVel_;
+      if(controller_type == 1){
+        pos_error   = mavPos_ - targetPos_;
+        vel_error   = mavVel_ - targetVel_;
+      }
+      else if(controller_type == 2){
+        pos_error  << 0.0, 0.0, 0.0;
+        vel_error   = mavVel_ - targetVel_;
+      }
+      else if(controller_type == 3){
+        pos_error   = mavPos_ - targetPos_;
+        vel_error  << 0.0, 0.0, 0.0;
+      }    
+      else if(controller_type == 4){
+        pos_error  << 0.0, 0.0, 0.0;
+        vel_error  << 0.0, 0.0, 0.0;
+      }    
+      
       cmdBodyRate_ = control_tech->calculate_control_fb(pos_error, vel_error, mavRate_, targetW_, targetAcc_, targetYaw_, mavAtt_, q_des);
     }
     else
@@ -199,18 +214,23 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
   case LANDING: 
   {
     geometry_msgs::PoseStamped landingmsg;
+    Eigen::Vector3d error;
     landingmsg.header.stamp = ros::Time::now();
     landingmsg.pose = home_pose_;
-    landingmsg.pose.position.z += 5; 
+    landingmsg.pose.position.z += take_off_height; 
     target_posePub_.publish(landingmsg);
     
-    if((abs(mavPos_[2]-landingmsg.pose.position.z)<0.01))
+    error << mavPos_[0] - landingmsg.pose.position.x, mavPos_[1] - landingmsg.pose.position.y, mavPos_[2] - landingmsg.pose.position.z;
+    double dist_norm = error.norm();
+    
+    if(dist_norm<0.05)
     {
       node_state = LANDED;   
       statusloop_timer_.stop();
       offb_set_mode_.request.custom_mode = "AUTO.LAND";
       if( set_mode_client_.call(offb_set_mode_) && offb_set_mode_.response.mode_sent){
       ROS_INFO("Landing Mode enabled");
+      cmdloop_timer_.stop();
       }
     }
     ros::spinOnce();

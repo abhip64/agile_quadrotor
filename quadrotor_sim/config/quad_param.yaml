@@ -5,7 +5,7 @@
 control_loop_freq : 100
 
 #Initial Take-Off Height
-take_off_height : 5
+take_off_height : 10.0
 
 #To select which controller to be executed. New controllers can be added in the external_control package.
 #For details on adding the controller check out the wiki

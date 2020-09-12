@@ -25,6 +25,8 @@
 
 #include "maneuvers/trajectory_class.h"
 #include "maneuvers/circle_maneuver.h"
+#include "maneuvers/flip_maneuver.h"
+#include "maneuvers/slit_maneuver.h"
 
 using namespace std;
 using namespace Eigen;
@@ -41,7 +43,7 @@ private:
 
   ros::Publisher controllertype_;
 
-  ros::Subscriber mavposeSub_, mavtwistSub_;
+  //ros::Subscriber mavposeSub_, mavtwistSub_;
 
   ros::ServiceServer trajtriggerServ_;
   ros::Timer trajloop_timer_;

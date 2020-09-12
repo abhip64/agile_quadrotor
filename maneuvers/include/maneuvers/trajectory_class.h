@@ -14,8 +14,10 @@ private:
 	Eigen::Vector3d target_position;
 	Eigen::Vector3d target_velocity;
 	Eigen::Vector3d target_acceleration;
+	Eigen::Vector3d target_jerk;
 	Eigen::Vector3d target_angvel;
-
+	double 			target_yaw;
+	int 			type;
 
 public:
 
@@ -25,7 +27,7 @@ public:
 
     virtual void trajectory_generator(double)             = 0;
 
-    virtual int maneuver_init()                           = 0;
+    virtual double maneuver_init()                        = 0;
 
     virtual Eigen::Vector3d calculate_trajectory_angvel() = 0;
 
@@ -36,6 +38,7 @@ public:
 	virtual Eigen::Vector3d get_target_jerk()             = 0;
 	virtual Eigen::Vector3d get_target_angvel()           = 0;
 	virtual double		    get_target_yaw()              = 0;
+	virtual int 			get_type()					  = 0;
 
 };
 

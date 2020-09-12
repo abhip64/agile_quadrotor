@@ -18,22 +18,24 @@ void quadrotor_sim::trajectorytargetCallback(const control_msg::TargetTrajectory
   reference_request_now_  = ros::Time::now();
   reference_request_dt_   = (reference_request_now_ - reference_request_last_).toSec();
 
-  targetPos_  = toEigen(msg.position);
-  targetVel_  = toEigen(msg.velocity);
-  targetAcc_  = toEigen(msg.acceleration);
-  targetW_    = toEigen(msg.ang_vel);
-  targetYaw_  = msg.yaw.data;
+  targetPos_      = toEigen(msg.position);
+  targetVel_      = toEigen(msg.velocity);
+  targetAcc_      = toEigen(msg.acceleration);
+  targetW_        = toEigen(msg.ang_vel);
+  targetYaw_      = msg.yaw.data;
+  controller_type = msg.type_mask;
 
 }
 
 //This parameters selects the type of controller that needs to be selected for executing a specific maneuver.
 //Like position controller, velocity controller, angle controller etc. This data is obtained from the 
 //trajectory node.
+/*
 void quadrotor_sim::typeCallback(const std_msgs::Int8& msg)
 {
   controller_type = int(msg.data); 
 }
-
+*/
 
 //Subscribing to current quadrotor position and attitude published by PX4
 void quadrotor_sim::mavposeCallback(const geometry_msgs::PoseStamped& msg){

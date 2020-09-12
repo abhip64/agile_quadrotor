@@ -30,20 +30,8 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
 
   //The controller type specifies the mode in which the controller has to run depending on the specific 
   //maneuver that has to be achieved
-  controllertype_   = nh_.advertise<std_msgs::Int8>("/trajectory/controller_type",100);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//SUBSCRIBER DEFINITION
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  //Subscribe to the current position and attitude of the quadrotor
-  mavposeSub_       = nh_.subscribe("/mavros/local_position/pose", 50, &trajectoryPublisher::mavposeCallback, this,ros::TransportHints().tcpNoDelay());
-  
-  //vehicle_pos_Sub_  = nh_.subscribe("/odometry/filtered", 50, &trajectoryPublisher::update_ugv_state, this,ros::TransportHints().tcpNoDelay());
-  
-  //Subscribe to the current velocity and angular velocity of the quadrotor
-  mavtwistSub_      = nh_.subscribe("/mavros/local_position/velocity_local", 50, &trajectoryPublisher::mavtwistCallback, this,ros::TransportHints().tcpNoDelay());
-  
+  //controllertype_   = nh_.advertise<std_msgs::Int8>("/trajectory/controller_type",100);
+ 
   //accelSub_         = nh_.subscribe("/accel/filtered", 30, &trajectoryPublisher::accel_sub, this,ros::TransportHints().tcpNoDelay());
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -66,13 +54,23 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
 //MANEUVER SELECTION FOR EXECUTION
 
   //Maneuver type obtained from the parameter server. Default maneuver is circle
-  nh_.param<int>("/maneuver_select", maneuver_type_select, 0);
+  nh_.param<int>("/trajectory_generator/maneuver_select", maneuver_type_select, 0);
 
   switch (maneuver_type_select)
   {
     case 0:
     {
       maneuver_select = std::make_shared<circle_traverse>(nh_);
+      break;
+    }
+    case 1:
+    {
+      maneuver_select = std::make_shared<slit_traverse>(nh_);
+      break;
+    }
+    case 2:
+    {
+      maneuver_select = std::make_shared<flip_traverse>(nh_);
       break;
     }
 
@@ -88,23 +86,6 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
 
 }
 
-
-void trajectoryPublisher::mavtwistCallback(const geometry_msgs::TwistStamped& msg){  
-  mavVel_ << msg.twist.linear.x, msg.twist.linear.y, msg.twist.linear.z;
-}
-
-
-void trajectoryPublisher::mavposeCallback(const geometry_msgs::PoseStamped& msg){
-
-  mavPos_ << msg.pose.position.x, msg.pose.position.y, msg.pose.position.z;
-
-  mavAtt_(0) = msg.pose.orientation.w;
-  mavAtt_(1) = msg.pose.orientation.x;
-  mavAtt_(2) = msg.pose.orientation.y;
-  mavAtt_(3) = msg.pose.orientation.z;
-
-}
-
 void trajectoryPublisher::updateReference() {
 
   trigger_time_ = (ros::Time::now() - start_time_).toSec();
@@ -114,13 +95,12 @@ void trajectoryPublisher::updateReference() {
   {
     maneuver_select->trajectory_generator(trigger_time_);
 
-    p_targ   = maneuver_select->get_target_pos();
-    v_targ   = maneuver_select->get_target_vel();
-    w_targ   = maneuver_select->get_target_angvel();
-    a_targ   = maneuver_select->get_target_acc();
-    yaw_targ = maneuver_select->get_target_yaw();
-
-    motion_selector_ = 1;
+    p_targ           = maneuver_select->get_target_pos();
+    v_targ           = maneuver_select->get_target_vel();
+    w_targ           = maneuver_select->get_target_angvel();
+    a_targ           = maneuver_select->get_target_acc();
+    yaw_targ         = maneuver_select->get_target_yaw();
+    motion_selector_ = maneuver_select->get_type();
   }
   else
     motion_selector_ = 0;
@@ -132,6 +112,7 @@ void trajectoryPublisher::pubflatrefState(){
 
   msg.header.stamp    = ros::Time::now();
   msg.header.frame_id = "map";
+  msg.type_mask       = motion_selector_;
   
   msg.position.x      = p_targ(0);
   msg.position.y      = p_targ(1);
@@ -151,12 +132,12 @@ void trajectoryPublisher::pubflatrefState(){
 
   msg.yaw.data        = yaw_targ;
 
-  typepublish();
+  //typepublish();
 
   desired_trajPub_.publish(msg);
 }
 
-
+/*
 void trajectoryPublisher::typepublish()
 {
   std_msgs::Int8 cont_type;
@@ -165,17 +146,16 @@ void trajectoryPublisher::typepublish()
 
   controllertype_.publish(cont_type);
 }
+*/
 
 void trajectoryPublisher::refCallback(const ros::TimerEvent& event){
 
   if(publish_data)
   {
     updateReference();
+    
+    pubflatrefState();
 
-    if(motion_selector_)
-      pubflatrefState();
-    else
-      typepublish();
   }
 }
 
