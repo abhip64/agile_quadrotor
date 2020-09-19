@@ -54,7 +54,7 @@ cd ~/catkin_ws
 catkin build
 ```
 
-### agile_quad 
+### Agile-Quadrotor 
 ```shell
 cd ~/catkin_ws/src  
 git clone https://github.com/abhip64/Agile-Quadrotor.git
@@ -73,7 +73,22 @@ cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/robot_localisation/ekf_template
 
 ## Usage
 
-## License
+The current version of the project implements three types of maneuvers making use of external geometric controller. The details on changing the parameters of these maneuvers are discussed in detail in the wiki associated with the project.
+
+### Circular Trajectory
+```shell
+roslaunch quadrotor_sim quadrotor_circle_trajectory.launch
+```
+
+### Slit Traversal Maneuver
+```shell
+roslaunch quadrotor_sim quadrotor_slit_trajectory.launch
+```
+
+### UGV Tracking and Following
+```shell
+roslaunch quadrotor_sim quadrotor_ugv_follow_maneuver.launch 
+```
 
 
 
