@@ -16,6 +16,7 @@ find_package(catkin REQUIRED COMPONENTS
   mavros_extras
   mavros_msgs
   control_msg
+  apriltag_ros
 )
 
 ## System dependencies are found with CMake's conventions
@@ -108,9 +109,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES quadrotor_sim
-  CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs mavros mavros_msgs mavros_extras
+  #INCLUDE_DIRS include
+  #LIBRARIES quadrotor_sim
+  #CATKIN_DEPENDS geometry_msgs roscpp rospy std_msgs mavros mavros_msgs #mavros_extras apriltag_ros
 )
 
 ###########
@@ -222,4 +223,12 @@ add_executable(quadrotor_sim
 
 add_dependencies(quadrotor_sim ${catkin_EXPORTED_TARGETS})
 target_link_libraries(quadrotor_sim ${catkin_LIBRARIES})
+
+add_executable(apriltag_pos_transform
+        src/apriltag_data_transform.cpp
+        src/math_operations.cpp
+)
+
+add_dependencies(apriltag_pos_transform ${catkin_EXPORTED_TARGETS})
+target_link_libraries(apriltag_pos_transform ${catkin_LIBRARIES})
 

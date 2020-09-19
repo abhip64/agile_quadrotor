@@ -1,7 +1,7 @@
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
-EXECUTE THE SLIT TRAVERSAL MANEUVER
+UGV TRACKING AND FOLLOWING MANEUVER
 */
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //HEADER FILES
 
@@ -82,7 +82,7 @@ double ugv_follow::maneuver_init(double trigger_time)
   if(dist_to_ugv < 0.5)
   {
     phase = 2;
-    time_to_intersection = 0.5;
+    time_to_intersection = 0.2;
   }
   else
   {
@@ -104,6 +104,10 @@ double ugv_follow::maneuver_init(double trigger_time)
   //Setting the desired z axis position of the quadrotor to be the hover height
   ugvpos_future[2] = hover_height;
 
+  //Number of dimensions that need to be considered for each waypoint e.g. Dimension of 3 requires the definition
+  //of the waypoint derivatives along X, Y and Z.
+  const int dimension = 3;
+
   //Trajectory generation is carried out using the mav_trajectory_generation package
   mav_trajectory_generation::Vertex::Vector vertices;
   //Defintion of two waypoints. The first waypoint is the current position of the quadrotor and the next
@@ -111,9 +115,6 @@ double ugv_follow::maneuver_init(double trigger_time)
   //and the quadrotor
   mav_trajectory_generation::Vertex start(dimension),  end(dimension);
 
-  //Number of dimensions that need to be considered for each waypoint e.g. Dimension of 3 requires the definition
-  //of the waypoint derivatives along X, Y and Z.
-  const int dimension = 3;
 
   //Generated trajectory has to be a velocity minimal trajectory for quick approach
   const int derivative_to_optimize = mav_trajectory_generation::derivative_order::VELOCITY;
@@ -199,7 +200,7 @@ void ugv_follow::trajectory_generator(double time)
 
   }
   //Target Yaw is taken to be 0.0
-  target_yaw          = 0.0;
+  target_yaw          = ugv_yaw;
 
   //This parameter decides the mode of operation of the controller. The controller can work in 5 modes
   //MODE 0 - IGNORE ALL TRAJECTORY TARGET INPUTS (POSITION, VELOCITY, ACCELERATION, ANGULAR VELOCITY, YAW)

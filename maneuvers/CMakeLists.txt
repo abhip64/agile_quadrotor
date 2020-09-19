@@ -227,3 +227,4 @@ add_executable(trajectory_generator
 
 add_dependencies(trajectory_generator ${catkin_EXPORTED_TARGETS})
 target_link_libraries(trajectory_generator ${catkin_LIBRARIES})
+

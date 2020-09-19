@@ -1,3 +1,5 @@
+<?xml version="1.0"?>
+
 <launch>
   <arg name="mav_name" default="quad"/>
   <arg name="fcu_url" default="udp://:14540@127.0.0.1:14557"/>
@@ -31,6 +33,9 @@
   </node>
 
   <include file="$(find maneuvers)/launch/trajectory_launch.launch"/>
+
+  <node pkg="quadrotor_sim" type="apriltag_pos_transform" name="apriltag_pos_transform" output="screen">
+  </node>
 
   <include file="$(find mavros)/launch/node.launch">
       <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
@@ -85,6 +90,9 @@
 
   <include file="$(find robot_localization)/launch/ekf_template.launch"/>
 
+  <node name="image_proc" pkg="image_proc" type="image_proc" ns="/quad/usb_cam"/>
+
+  <include file="$(find apriltag_ros)/launch/continuous_detection.launch"/>
 
   <include file="$(find px4)/launch/posix_sitl.launch">
       <arg name="vehicle" value="$(arg mav_name)"/>
