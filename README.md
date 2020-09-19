@@ -22,7 +22,7 @@ The detailed instructions for setting up the simulation environement have been d
 mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/src  
 ```
-### apriltag_ros package
+### apriltag_ros 
 April Tag detection algorithm and its associated ROS wrapper is obtained from https://github.com/AprilRobotics/apriltag_ros. The installation instructions for the package are provided.
 ```shell
 cd ~/catkin_ws/src  
@@ -33,7 +33,7 @@ rosdep install --from-paths src --ignore-src -r -y
 catkin build
 ```
 
-### robot_localisation package
+### robot_localisation 
 robot_localisation package is used for implementing Kalman filter. More details of the package can be found in https://github.com/cra-ros-pkg/robot_localization/tree/kinetic-devel. Some more insights relating to the functioning and usage of the package can be found at https://kapernikov.com/the-ros-robot_localization-package/. 
 
 ```shell
@@ -43,7 +43,7 @@ cd ~/catkin_ws
 catkin build
 ```
 
-### ackermann_vehicle package
+### ackermann_vehicle 
 
 ```shell
 cd ~/catkin_ws/src  
@@ -53,7 +53,7 @@ cd ~/catkin_ws
 catkin build
 ```
 
-### agile_quad package
+### agile_quad 
 ```shell
 cd ~/catkin_ws/src  
 git clone https://github.com/abhip64/Agile-Quadrotor.git
