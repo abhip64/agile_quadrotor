@@ -20,6 +20,7 @@
           <param name="ctrl_mode" value="$(arg command_input)" />
           <param name="enable_sim" value="$(arg gazebo_simulation)" />
           <param name="enable_gazebo_state" value="true"/>
+          <param name="maneuver_select" value="0"/>
   </node>
 
   <include file="$(find maneuvers)/launch/trajectory_launch.launch"/>
@@ -39,6 +40,8 @@
 
   <include file="$(find px4)/launch/posix_sitl.launch">
       <arg name="vehicle" value="$(arg mav_name)"/>
+      <arg name="world"   value="$(find quadrotor_sim)/worlds/basic_world.world"/>
+      <arg name="sdf"     value="$(find quadrotor_sim)/models/quad/quad.sdf"/>
   </include>
 
 </launch>

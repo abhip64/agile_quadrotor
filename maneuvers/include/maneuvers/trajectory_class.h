@@ -4,6 +4,7 @@
 
 #include <ros/ros.h>
 #include <Eigen/Dense>
+//#include <quadrotor_sim/math_operations.h>
 
 class trajectory_class{
 
@@ -27,7 +28,7 @@ public:
 
     virtual void trajectory_generator(double)             = 0;
 
-    virtual double maneuver_init()                        = 0;
+    virtual double maneuver_init(double)                  = 0;
 
     virtual Eigen::Vector3d calculate_trajectory_angvel() = 0;
 

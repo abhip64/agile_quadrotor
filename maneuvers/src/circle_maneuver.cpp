@@ -38,7 +38,7 @@ circle_traverse::~circle_traverse() {
 }
 
 
-double circle_traverse::maneuver_init()
+double circle_traverse::maneuver_init(double time)
 {
   //The total execution time of the trajectory = Number of revolutions * Time Period of a single revolution
   return circle_rev*(2*M_PI/circle_ang_velocity);

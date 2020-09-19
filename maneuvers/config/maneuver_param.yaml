@@ -11,7 +11,7 @@
 # UGV Track          - 3
 # UGV Track and Land - 4
 
-maneuver_select : 1
+# maneuver_select : 1
 #########################################################################################################
 
 #########################################################################################################
@@ -64,6 +64,12 @@ flip_init_pos_x : 5.0
 # Y coordinate at which flip is performed
 flip_init_pos_y : 0.0
 
+#########################################################################################################
+# UGV Follow Maneuver
 
+#Nominal Velocity for UGV Tracking
+ugv_follow_velocity : 5.0
 
+#Hovering height
+hover_height        : 1.0
 

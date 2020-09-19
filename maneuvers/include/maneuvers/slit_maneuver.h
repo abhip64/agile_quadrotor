@@ -42,7 +42,7 @@ public:
 
     void trajectory_generator(double);
 
-    double maneuver_init();
+    double maneuver_init(double);
 
     Eigen::Vector3d calculate_trajectory_angvel();
 

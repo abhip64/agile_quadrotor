@@ -27,6 +27,7 @@
 #include "maneuvers/circle_maneuver.h"
 #include "maneuvers/flip_maneuver.h"
 #include "maneuvers/slit_maneuver.h"
+#include "maneuvers/ugv_follow_maneuver.h"
 
 using namespace std;
 using namespace Eigen;

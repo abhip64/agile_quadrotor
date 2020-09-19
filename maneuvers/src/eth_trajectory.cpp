@@ -4,47 +4,93 @@
 
 mav_trajectory_generation::Trajectory trajectory;
 
-double eth_trajectory_init(mav_trajectory_generation::Vertex::Vector vertices)
+extern const int derivative_to_optimize;
+
+
+void eth_trajectory_init(mav_trajectory_generation::Vertex::Vector vertices, std::vector<double> segment_times, int derv_opt)
 {
-  //This function calculates the snap minimal optimal trajectory that passes through the given vertices.
-  //Using the generated trajectory object the desired position, velocity, accelration and jerk along
-  //the trajectory can be convienently calculated. Desired angular acceleration can also be determined
-  //taking into consideration the differenetial flatnees nature of the quadrotor. Yaw planning is not
-  //coupled with trajectory design
-
   //Generated trajectory has to be a snap minimal trajectory
-  const int derivative_to_optimize = mav_trajectory_generation::derivative_order::SNAP;
-
-  //X Y Z
   const int dimension = 3;
 
-  double T_ = 0;
-
-  //Maximum possible allowable velocity along the trajectory
-  const double v_max = 20.0;
-
-  //Maximum possible allowable acceleration along the trajectory
-  const double a_max = 10.0;
-
-  //Segment time calculation using the data of the maximum possible velocity and acceleration
-  std::vector<double> segment_times;
-  segment_times = estimateSegmentTimes(vertices, v_max, a_max);
-  //Total time for traversing the trajectory
-  for(int i=0;i<segment_times.size();i++)
-	T_ += segment_times.at(i);
-
-  //Number of unknowns in the polynomial
-  const int N = 10;
-
-  //Determine the optimal trajectory satisfying the waypoints and the optimality condition
-  mav_trajectory_generation::PolynomialOptimization<N> opt(dimension);
+  
+  switch(derv_opt)
+  {
+    case 0:
+    {
+      const int derivative_to_optimize = mav_trajectory_generation::derivative_order::POSITION;
+      const int N = 2*(derivative_to_optimize + 1);
+        mav_trajectory_generation::PolynomialOptimization<N> opt(dimension);
   opt.setupFromVertices(vertices, segment_times, derivative_to_optimize);
+
   opt.solveLinear();
 
   opt.getTrajectory(&trajectory);
+      break;
+    }
+    case 1:
+    {
+      const int derivative_to_optimize = mav_trajectory_generation::derivative_order::VELOCITY;
+            const int N = 2*(derivative_to_optimize + 1);
 
-  //Return the time it takes for traversing the trajectory
-  return T_;
+        mav_trajectory_generation::PolynomialOptimization<N> opt(dimension);
+  opt.setupFromVertices(vertices, segment_times, derivative_to_optimize);
+
+  opt.solveLinear();
+
+  opt.getTrajectory(&trajectory);
+      break;
+    }
+    case 2:
+    {
+      const int derivative_to_optimize = mav_trajectory_generation::derivative_order::ACCELERATION;
+            const int N = 2*(derivative_to_optimize + 1);
+
+        mav_trajectory_generation::PolynomialOptimization<N> opt(dimension);
+  opt.setupFromVertices(vertices, segment_times, derivative_to_optimize);
+
+  opt.solveLinear();
+
+  opt.getTrajectory(&trajectory);
+      break;
+    }   
+    case 3:
+    {
+      const int derivative_to_optimize = mav_trajectory_generation::derivative_order::JERK;
+            const int N = 2*(derivative_to_optimize + 1);
+
+        mav_trajectory_generation::PolynomialOptimization<N> opt(dimension);
+  opt.setupFromVertices(vertices, segment_times, derivative_to_optimize);
+
+  opt.solveLinear();
+
+  opt.getTrajectory(&trajectory);
+      break;
+    }  
+    case 4:
+    {
+      const int derivative_to_optimize = mav_trajectory_generation::derivative_order::SNAP;
+            const int N = 2*(derivative_to_optimize + 1);
+
+        mav_trajectory_generation::PolynomialOptimization<N> opt(dimension);
+  opt.setupFromVertices(vertices, segment_times, derivative_to_optimize);
+
+  opt.solveLinear();
+
+  opt.getTrajectory(&trajectory);
+      break;
+    } 
+  }
+
+  //const int dummy = 2*(derivative_to_optimize + 1);
+  //Number of unknowns in the polynomial
+
+
+  //Number of dimensions that need to be considered for each waypoint e.g. Dimension of 3 requires the definition
+  //of the waypoint derivatives along X, Y and Z.
+
+
+  //Determine the optimal trajectory satisfying the waypoints and the optimality condition
+
 }
 
 Eigen::Vector3d eth_trajectory_pos(double time)

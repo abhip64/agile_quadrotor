@@ -11,7 +11,7 @@
 #include <std_srvs/SetBool.h>
 
 
-double eth_trajectory_init(mav_trajectory_generation::Vertex::Vector);
+void eth_trajectory_init(mav_trajectory_generation::Vertex::Vector, std::vector<double>, int);
 
 
 Eigen::Vector3d eth_trajectory_pos(double time);

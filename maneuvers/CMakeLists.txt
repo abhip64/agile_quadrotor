@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   tf
+  #quadrotor_sim
 )
 
 ## System dependencies are found with CMake's conventions
@@ -111,8 +112,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES maneuvers
-  CATKIN_DEPENDS control_msgs geometry_msgs mav_trajectory_generation mavros mavros_extras mavros_msgs roscpp rospy std_msgs tf
+  #LIBRARIES maneuvers
+  CATKIN_DEPENDS control_msgs geometry_msgs mav_trajectory_generation mavros mavros_extras mavros_msgs roscpp rospy std_msgs tf 
 )
 
 ###########
@@ -129,8 +130,8 @@ include_directories(
 )
 
 ## Declare a C++ library
-# add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/maneuvers.cpp
+# add_library(quadrotor_sim
+#   src/quadrotor_sim/math_operations.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -220,6 +221,7 @@ add_executable(trajectory_generator
         src/eth_trajectory.cpp
         src/flip_maneuver.cpp
         src/slit_maneuver.cpp
+        src/ugv_follow_maneuver.cpp
 )
 
 

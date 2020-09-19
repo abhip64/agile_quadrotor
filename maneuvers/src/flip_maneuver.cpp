@@ -64,13 +64,13 @@ flip_traverse::~flip_traverse() {
 }
 
 
-double flip_traverse::maneuver_init()
+double flip_traverse::maneuver_init(double time)
 {
   //std::cout<<mavPos_<<" "<<mavVel_<<"\n";
 
-  eth_set_pos(mavPos_,flip_init_pos);
+  //eth_set_pos(mavPos_,flip_init_pos);
 
-  eth_set_vel(mavVel_,flip_init_vel);
+  //eth_set_vel(mavVel_,flip_init_vel);
 
   //T1 = eth_trajectory_init();
 

@@ -7,6 +7,8 @@ EXECUTE THE SLIT TRAVERSAL MANEUVER
 
 #include "maneuvers/slit_maneuver.h"
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#define deg_to_rad M_PI/180.0
+
 using namespace std;
 using namespace Eigen;
 
@@ -50,7 +52,7 @@ slit_traverse::~slit_traverse() {
 }
 
 
-double slit_traverse::maneuver_init()
+double slit_traverse::maneuver_init(double time)
 {
   //The trajectory to pass through the slit involves the definition of three waypoints. The first waypoint
   //is the position at which the quadrotor is present immediately after takeoff. The second is the center
@@ -61,6 +63,9 @@ double slit_traverse::maneuver_init()
   //Number of dimensions that need to be considered for each waypoint e.g. Dimension of 3 requires the definition
   //of the waypoint derivatives along X, Y and Z.
   const int dimension = 3;
+
+  //Generated trajectory has to be a snap minimal trajectory
+  const int derivative_to_optimize = mav_trajectory_generation::derivative_order::SNAP;
 
   //Defintion of three waypoints
   mav_trajectory_generation::Vertex start(dimension), middle(dimension), end(dimension);
@@ -77,9 +82,11 @@ double slit_traverse::maneuver_init()
   //parallel to the slit plane.
   Eigen::Matrix3d R;
 
-  R << 1, 0                   , 0                ,
-       0, cos(slit_roll*M_PI/180.0), -sin(slit_roll*M_PI/180.0),
-       0, sin(slit_roll*M_PI/180.0), cos(slit_roll*M_PI/180.0) ;
+  slit_roll *= deg_to_rad;
+
+  R << 1, 0             , 0              ,
+       0, cos(slit_roll), -sin(slit_roll),
+       0, sin(slit_roll),  cos(slit_roll);
 
   Eigen::Vector3d slit_acc = R*g_ - g_;
 
@@ -96,7 +103,30 @@ double slit_traverse::maneuver_init()
   end.addConstraint(mav_trajectory_generation::derivative_order::VELOCITY, final_vel);
   vertices.push_back(end);
 
-  return eth_trajectory_init(vertices);
+  //Calculation of the snap minimal optimal trajectory that passes through the given vertices.
+  //Using the generated trajectory object the desired position, velocity, accelration and jerk along
+  //the trajectory can be convienently calculated. Desired angular acceleration can also be determined
+  //taking into consideration the differenetial flatnees nature of the quadrotor. Yaw planning is not
+  //coupled with trajectory design
+
+  double T_ = 0;
+
+  //Maximum possible allowable velocity along the trajectory
+  const double v_max = 20.0;
+
+  //Maximum possible allowable acceleration along the trajectory
+  const double a_max = 10.0;
+
+  //Segment time calculation using the data of the maximum possible velocity and acceleration
+  std::vector<double> segment_times;
+  segment_times = estimateSegmentTimes(vertices, v_max, a_max);
+  //Total time for traversing the trajectory
+  for(int i=0;i<segment_times.size();i++)
+  T_ += segment_times.at(i);
+
+  eth_trajectory_init(vertices, segment_times, derivative_to_optimize);
+
+  return T_;
 }
 
 void slit_traverse::trajectory_generator(double time)

@@ -54,7 +54,7 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
 //MANEUVER SELECTION FOR EXECUTION
 
   //Maneuver type obtained from the parameter server. Default maneuver is circle
-  nh_.param<int>("/trajectory_generator/maneuver_select", maneuver_type_select, 0);
+  nh_.param<int>("/quadrotor_sim/maneuver_select", maneuver_type_select, 0);
 
   switch (maneuver_type_select)
   {
@@ -73,6 +73,11 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
       maneuver_select = std::make_shared<flip_traverse>(nh_);
       break;
     }
+    case 3:
+    {
+      maneuver_select = std::make_shared<ugv_follow>(nh_);
+      break;
+    }
 
     default:
     { 
@@ -81,8 +86,9 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
     }
   }
 
+  ros::spinOnce();
   //Time for which trajectory should be executed
-  T = maneuver_select->maneuver_init();
+  T = maneuver_select->maneuver_init(0.0);
 
 }
 
@@ -137,16 +143,6 @@ void trajectoryPublisher::pubflatrefState(){
   desired_trajPub_.publish(msg);
 }
 
-/*
-void trajectoryPublisher::typepublish()
-{
-  std_msgs::Int8 cont_type;
-
-  cont_type.data = motion_selector_;
-
-  controllertype_.publish(cont_type);
-}
-*/
 
 void trajectoryPublisher::refCallback(const ros::TimerEvent& event){
 
