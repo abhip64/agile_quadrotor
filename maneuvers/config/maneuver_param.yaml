@@ -73,3 +73,5 @@ ugv_follow_velocity : 5.0
 #Hovering height
 hover_height        : 1.0
 
+#If landing is needed
+ugv_land_init       : 1

@@ -54,6 +54,10 @@ ugv_follow::ugv_follow(const ros::NodeHandle& nh): nh_(nh)
   //Height above the UGV at which the quadrotor tracks the UGV
   nh_.param<double>("/trajectory_generator/hover_height", hover_height, 1.0);
 
+  //To initiate the landing procedure. If this variable is 0 then quadrotor does not land on ugv.
+  //Only if this variable is 1 landing is initiated
+  nh_.param<int>("/trajectory_generator/ugv_land_init", ugv_land_init, 0);
+
   //Subscriber to obtain the current position, velocity, acceleration and attitude of the UGV from a Kalman Filter
   vehicle_posSub_   = nh_.subscribe("/odometry/filtered", 50, &ugv_follow::ugv_state_sub, this,ros::TransportHints().tcpNoDelay());
   
@@ -76,23 +80,22 @@ ugv_follow::~ugv_follow() {
 double ugv_follow::maneuver_init(double trigger_time)
 {
   //Distance between the UGV and quadrotor along the XY plane
-  dist_to_ugv = planar_distance_calculator(mavPos_,ugv_position);
+  dist_to_ugv = planar_distance_calculator(mavPos_, ugv_position);
 
-  //If the above calculated distance is less than 0.5m then phase 2 of UGV tracking is initiated
-  if(dist_to_ugv < 0.5)
+  //If the above calculated distance is less than 0.2m then phase 2 of UGV tracking is initiated
+  if(dist_to_ugv < 0.2)
   {
-    phase = 2;
-    time_to_intersection = 0.2;
+    //Getting the start time of the landing maneuver(phase 2).
+    if(phase == 1)
+      start_time = ros::Time::now();
+
+    phase                = 2;
+    time_to_intersection = 0.1;
   }
   else
   {
     phase = 1;
-    time_to_intersection = dist_to_ugv/ugv_follow_velocity + 1.0 - trigger_time;
-
-    //If the quadrotor was unable to reach the UGV in the calculated time to intersection then 
-    //time to intersection parameter is re-initialised
-    if(time_to_intersection < 0.0)
-      time_to_intersection = dist_to_ugv/ugv_follow_velocity + 1.0;
+    time_to_intersection = dist_to_ugv/ugv_follow_velocity;
   }
   
   //Intersection trajectory recalculation happens only when there is significant variation in the 
@@ -145,7 +148,7 @@ double ugv_follow::maneuver_init(double trigger_time)
  
   }
   //Return a large value for return time to ensure tracking of the UGV by the quadrotor is not stopped
-  //abruptly
+  //abruptly in the trajectoryPublisher.cpp code
   return 1000.0;
 }
 
@@ -178,20 +181,51 @@ void ugv_follow::trajectory_generator(double time)
 
   //Target jerk obtained from the generated trajectory object using the mav_trajectory_generation package
   target_angvel       = calculate_trajectory_angvel();
+
+  //This parameter decides the mode of operation of the controller. The controller can work in 5 modes
+  //MODE 0 - IGNORE ALL TRAJECTORY TARGET INPUTS (POSITION, VELOCITY, ACCELERATION, ANGULAR VELOCITY, YAW)
+  //MODE 1 - ACCEPT ALL TRAJECTORY TARGET INPUTS FOR CONTROL OUTPUT CALCULATION
+  //MODE 2 - IGNORE ONLY POSITION FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
+  //MODE 3 - IGNORE ONLY VELOCITY FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
+  //MODE 4 - IGNORE POSITION AND VELOCITY FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
+  //MODE 5 - SWITCH OFF TRAJECTORY PUBLISHER
+  type = 1;
   }
-  //Phase 2 corresponds to close tracking of the UGV at a given hover height
+  //Phase 2 corresponds to close tracking of the UGV at a given hover height or landing on the UGV
+  //whichever out of the two has been commanded by the user by the ugv_land_init variable
   else if(phase == 2)
   {
   //Target position obtained from the generated trajectory object using the mav_trajectory_generation package
   target_position     = ugvpos_future;
-  target_position[2]  = hover_height;
+
+  //Target acceleration obtained from the generated trajectory object using the mav_trajectory_generation package
+  target_acceleration = ugv_acceleration;
+
+  //If landing is commanded by the user then the height of the quadrotor is linearly reduced
+  if(ugv_land_init)
+  {
+    target_position[2]  = hover_height - (hover_height - ugv_position[2])*(ros::Time::now() - start_time).toSec()/10.0;
+
+    if((ros::Time::now() - start_time).toSec() > 10.0)
+    {
+      ROS_INFO("LANDED");
+      type = 5;
+
+      //The motors need to stop when the quadrotor reaches a certain height over the UGV. For this
+      //a negative accelaration is given(has to be greater than g) which will saturate the motor
+      //in its lower limit and stop the motors. CAN BE IMPROVED
+      target_acceleration << 0.0, 0.0, -10.0;
+    }
+  }
+  else
+  {
+    target_position[2]  = hover_height;
+    type = 1;
+  }
  
   //Target velocity obtained from the generated trajectory object using the mav_trajectory_generation package
   target_velocity     = ugvvel_future;
   
-  //Target acceleration obtained from the generated trajectory object using the mav_trajectory_generation package
-  target_acceleration = ugv_acceleration;
-
   //Target jerk obtained from the generated trajectory object using the mav_trajectory_generation package
   target_jerk        << 0.0, 0.0, 0.0;
 
@@ -201,14 +235,6 @@ void ugv_follow::trajectory_generator(double time)
   }
   //Target Yaw is taken to be 0.0
   target_yaw          = ugv_yaw;
-
-  //This parameter decides the mode of operation of the controller. The controller can work in 5 modes
-  //MODE 0 - IGNORE ALL TRAJECTORY TARGET INPUTS (POSITION, VELOCITY, ACCELERATION, ANGULAR VELOCITY, YAW)
-  //MODE 1 - ACCEPT ALL TRAJECTORY TARGET INPUTS FOR CONTROL OUTPUT CALCULATION
-  //MODE 2 - IGNORE ONLY POSITION FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
-  //MODE 3 - IGNORE ONLY VELOCITY FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
-  //MODE 4 - IGNORE POSITION AND VELOCITY FOR CONTROL OUTPUT CALCULATION (ERROR IS TAKEN AS 0)
-  type = 1;
 
 }
 
@@ -340,7 +366,7 @@ bool ugv_follow::future_state_predict()
   dummy_pos     = ugv_position + ugvvel_future*time_to_intersection;
 
   //The error between the previously predicted future UGV position and the future UGV position
-  //predicted now. The approach trajectory is recalculted only if the variation between the 
+  //calculated now. The approach trajectory is recalculted only if the variation between the 
   //two is significant
   dummy_error   = planar_distance_calculator(dummy_pos, ugvpos_future);
 

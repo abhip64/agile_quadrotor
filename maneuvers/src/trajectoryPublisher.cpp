@@ -56,25 +56,30 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
   //Maneuver type obtained from the parameter server. Default maneuver is circle
   nh_.param<int>("/quadrotor_sim/maneuver_select", maneuver_type_select, 0);
 
+  //Initialising the corresponding maneuver class based on user selection
   switch (maneuver_type_select)
   {
     case 0:
     {
+      //Class for circular trajectory
       maneuver_select = std::make_shared<circle_traverse>(nh_);
       break;
     }
     case 1:
     {
+      //Class for slit traversal maneuver
       maneuver_select = std::make_shared<slit_traverse>(nh_);
       break;
     }
     case 2:
     {
+      //Class for flip maneuver. Currently not active
       maneuver_select = std::make_shared<flip_traverse>(nh_);
       break;
     }
     case 3:
     {
+      //Class for UGV tracking, following and landing maneuver
       maneuver_select = std::make_shared<ugv_follow>(nh_);
       break;
     }
@@ -86,19 +91,24 @@ trajectoryPublisher::trajectoryPublisher(const ros::NodeHandle& nh) :
     }
   }
 
+  //Carry out all message subscriptions before initiating the maneuver
   ros::spinOnce();
+
   //Time for which trajectory should be executed
   T = maneuver_select->maneuver_init(0.0);
 
 }
 
+//Function to obtain the trajectory targets from the specific maneuver class
 void trajectoryPublisher::updateReference() {
 
+  //Time for start of trajectory publishing
   trigger_time_ = (ros::Time::now() - start_time_).toSec();
 
   //The trajectory is updated until the total time for trajectory execution is completed
   if(trigger_time_<T)
   {
+    //Determining the trajectory targets for the given trigger time from the corresponding maneuver class
     maneuver_select->trajectory_generator(trigger_time_);
 
     p_targ           = maneuver_select->get_target_pos();
@@ -108,10 +118,13 @@ void trajectoryPublisher::updateReference() {
     yaw_targ         = maneuver_select->get_target_yaw();
     motion_selector_ = maneuver_select->get_type();
   }
+  //If the time for which the maneuver needs to be executed is completed then the controller is asked to 
+  //ignore the trajectory targets and initiate landing at the home position
   else
     motion_selector_ = 0;
 }
 
+//Function for publishing the trajectory targets
 void trajectoryPublisher::pubflatrefState(){
   
   control_msg::TargetTrajectory msg;
@@ -138,8 +151,6 @@ void trajectoryPublisher::pubflatrefState(){
 
   msg.yaw.data        = yaw_targ;
 
-  //typepublish();
-
   desired_trajPub_.publish(msg);
 }
 
@@ -151,10 +162,16 @@ void trajectoryPublisher::refCallback(const ros::TimerEvent& event){
     updateReference();
     
     pubflatrefState();
-
   }
+
+  //This is used for the quadrotor landing maneuver on the UGV. When the quadrotor lands, the trajectory
+  //pubisher is stopped to prevent further commands to be passed on to the controller. CAN BE IMPROVED
+  if(motion_selector_ == 5)
+    refloop_timer_.stop();
+
 }
 
+//Function for starting and stopping the trajectory publishing node
 bool trajectoryPublisher::triggerCallback(std_srvs::SetBool::Request &req, std_srvs::SetBool::Response &res){
   
   publish_data = req.data;

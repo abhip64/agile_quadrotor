@@ -63,10 +63,17 @@ private:
     //follow the UGV at a given height by making use of onboard camera to detect the UGV
 	int phase;
 
+	//Dummy variable for storing time
 	double elasped_time;
 
 	//Height at which the quadrotor follows the UGV
 	double hover_height;
+
+	//To see if user has commanded landing 
+	int ugv_land_init;
+
+	//Start time of the landing operation
+	ros::Time start_time;
 	
 public:
 

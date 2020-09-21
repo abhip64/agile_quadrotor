@@ -178,7 +178,11 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
   //Trajectory tracking happens here. The controller mode of operation is selected here
   case MISSION_EXECUTION:
   {
-    if(controller_type)
+    if(controller_type == 0)
+    {
+      node_state = LANDING;
+    }
+    else
     {
       Eigen::Vector3d pos_error;
       Eigen::Vector3d vel_error;
@@ -202,10 +206,7 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
       
       cmdBodyRate_ = control_tech->calculate_control_fb(pos_error, vel_error, mavRate_, targetW_, targetAcc_, targetYaw_, mavAtt_, q_des);
     }
-    else
-    {
-      node_state = LANDING;
-    }
+    
     pubRateCommands(cmdBodyRate_);
 
     break;
@@ -236,6 +237,13 @@ void quadrotor_sim::cmdloopCallback(const ros::TimerEvent& event){
     ros::spinOnce();
     break;
   }
+  /*case LANDED:
+  {
+    arm_cmd_.request.value = false;
+    arming_client_.call(arm_cmd_);
+    statusloop_timer_.stop();
+    cmdloop_timer_.stop();
+  }*/
   }
 }
 
