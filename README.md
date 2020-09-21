@@ -3,8 +3,8 @@
 ## Description
 This ROS package is meant to be used as a tool to test out several agile/aggressive maneuvers using a simulated model of a 
 quadrotor. The simulation has been implemented in ROS-Gazebo simulation environment using PX4-SITL. The main objective of
-this package is to provide a platform for testing out various trajectory generation techniques and control stratgies for
-effectvely executing a manuever. More details about the working of each component of the algorithm is discussed in detail
+this package is to provide a platform for testing out various trajectory generation techniques and control strategies for
+effectively executing a manuever. More details about the working of each component of the algorithm is discussed in detail
 in the wiki section of the project. Special mention is required for the package by Jaeyoung-Lim https://github.com/Jaeyoung-Lim/mavros_controllers. The original code has been forked from his repository and I got many insights
 pertaining to the structure of the code from his work. 
 
@@ -62,13 +62,19 @@ cd ~/catkin_ws
 catkin build
 ```
 
-After all the packages have been succesfully built, it is necessary to setup the configuration files in apriltag_ros and robot_localisation packages to work with my package. The files that need to be changed are given in the "Auxiliary Files" (https://github.com/abhip64/Agile-Quadrotor/tree/master/auxiliary_files) folder in agile_quad package. Execute the following commands for updating the configuration files.
+After all the packages have been succesfully built, it is necessary to setup the configuration files in apriltag_ros and robot_localisation packages to work with my package. The files that need to be changed are given in the "Auxiliary Files" (https://github.com/abhip64/Agile-Quadrotor/tree/master/auxiliary_files) folder in Agile-Quadrotor package. Execute the following commands for updating the configuration files.
 
 ```shell
 cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/apriltag/continuous_detection.launch ~/catkin_ws/src/apriltag_ros/apriltag_ros/launch/continuous_detection.launch
 cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/apriltag/settings.yaml ~/catkin_ws/src/apriltag_ros/apriltag_ros/config/settings.yaml
 cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/apriltag/tags.yaml ~/catkin_ws/src/apriltag_ros/apriltag_ros/config/tags.yaml
 cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/robot_localisation/ekf_template.yaml ~/catkin_ws/src/robot_localization/params/ekf_template.yaml
+```
+
+Also add this line to the bashrc file to ensure gazebo finds the sdf models of the quadrotor
+
+```shell
+export GAZEBO_MODEL_PATH=~/catkin_ws/src/agile_quad/quadrotor_sim/models:${GAZEBO_MODEL_PATH}
 ```
 
 ## Usage
