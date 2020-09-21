@@ -5,7 +5,7 @@ This ROS package is meant to be used as a tool to test out several agile/aggress
 quadrotor. The simulation has been implemented in ROS-Gazebo simulation environment using PX4-SITL. The main objective of
 this package is to provide a platform for testing out various trajectory generation techniques and control strategies for
 effectively executing a manuever. More details about the working of each component of the algorithm is discussed in detail
-in the wiki section of the project. Special mention is required for the package by Jaeyoung-Lim https://github.com/Jaeyoung-Lim/mavros_controllers. The original code has been forked from his repository and I got many insights
+in the wiki section of the project. Special mention is required for the package by Jaeyoung-Lim https://github.com/Jaeyoung-Lim/mavros_controllers. The original code had been forked from his repository and I got many insights
 pertaining to the structure of the code from his work. 
 
 ## System Specifications
@@ -96,7 +96,10 @@ roslaunch quadrotor_sim quadrotor_slit_trajectory.launch
 roslaunch quadrotor_sim quadrotor_ugv_follow_maneuver.launch 
 ```
 
+## References
 
+<a id="1">[1]</a> 
+D. Mellinger and V. Kumar, "Minimum snap trajectory generation and control for quadrotors," 2011 IEEE International Conference on Robotics and Automation, Shanghai, 2011, pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.
 
 
 
