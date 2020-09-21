@@ -101,5 +101,11 @@ roslaunch quadrotor_sim quadrotor_ugv_follow_maneuver.launch
 <a id="1">[1]</a> 
 D. Mellinger and V. Kumar, "Minimum snap trajectory generation and control for quadrotors," 2011 IEEE International Conference on Robotics and Automation, Shanghai, 2011, pp. 2520-2525, doi: 10.1109/ICRA.2011.5980409.
 
+<a id="2">[2]</a>
+C. Richter, A. Bry, and N. Roy, “Polynomial trajectory planning for aggressive quadrotor flight in dense indoor environments,” in International Journal of Robotics Research, Springer, 2016.
+
+<a id="3">[3]</a>
+T. Moore and D. Stouch, "A Generalized Extended Kalman Filter Implementation for the Robot Operating System", Proceedings of the 13th International Conference on Intelligent Autonomous Systems (IAS-13), 2014
+
 
 
