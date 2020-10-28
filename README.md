@@ -54,10 +54,10 @@ cd ~/catkin_ws
 catkin build
 ```
 
-### Agile-Quadrotor 
+### agile_quadrotor 
 ```shell
 cd ~/catkin_ws/src  
-git clone https://github.com/abhip64/Agile-Quadrotor.git
+git clone https://github.com/abhip64/agile_quadrotor.git
 cd ~/catkin_ws 
 catkin build
 ```
