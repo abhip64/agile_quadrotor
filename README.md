@@ -39,7 +39,7 @@ robot_localisation package is used for implementing Kalman filter. More details 
 
 ```shell
 cd ~/catkin_ws/src  
-git clone https://github.com/cra-ros-pkg/robot_localization.git
+git clone -b kinetic-devel https://github.com/cra-ros-pkg/robot_localization.git
 cd ~/catkin_ws 
 catkin build
 ```
