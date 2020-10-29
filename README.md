@@ -74,7 +74,7 @@ cp -f ~/catkin_ws/src/agile_quadrotor/auxiliary_files/robot_localisation/ekf_tem
 Also add this line to the bashrc file to ensure gazebo finds the sdf models of the quadrotor
 
 ```shell
-export GAZEBO_MODEL_PATH=~/catkin_ws/src/agile_quad/quadrotor_sim/models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=~/catkin_ws/src/agile_quadrotor/quadrotor_sim/models:${GAZEBO_MODEL_PATH}
 ```
 
 ## Usage
