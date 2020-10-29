@@ -13,11 +13,11 @@ The simulation platform was designed and tested in the following work environmen
 * Ubuntu 16.04 running on a system with Intel Core i7 CPU @ 2.20GHz × 8 and 8GB RAM
 * ROS Kinetic
 * Gazebo 7.0.0
-* PX4 SITL 
+* PX4 SITL 1.9
 
 
 ## Installation
-The detailed instructions for setting up the simulation environement have been descirbed in the wiki associated with this project. The method of installation of the package and its dependencies will be descirbed here.
+The detailed instructions for setting up the simulation environement including ROS-GAZEBO and PX4 have been descirbed in the wiki associated with this project. After installation of the above software, the necessary packages for running the simulation has to be installed. The method of installation of the package and its dependencies will be described here.
 
 ```shell
 mkdir -p ~/catkin_ws/src
@@ -38,12 +38,29 @@ catkin build
 robot_localisation package is used for implementing Kalman filter. More details of the package can be found in https://github.com/cra-ros-pkg/robot_localization/tree/kinetic-devel. Some more insights relating to the functioning and usage of the package can be found at https://kapernikov.com/the-ros-robot_localization-package/. 
 
 ```shell
+sudo apt-get install python-wstool python-catkin-tools ros-indigo-cmake-modules libyaml-cpp-dev
+sudo apt-get install libgeographic-dev ros-kinetic-geographic-msgs
 cd ~/catkin_ws/src  
 git clone -b kinetic-devel https://github.com/cra-ros-pkg/robot_localization.git
 cd ~/catkin_ws 
 catkin build
 ```
+### mav_trajectory_generation
+mav_trajectory_generation is a key package involved in generating snap optimal trajectories based on constraints on waypoint derivatives. More details on the package can be found in https://github.com/ethz-asl/mav_trajectory_generation. Installation instructions of the package are provided at their github page. Simplified version of the instructions are given here.
 
+```shell
+cd ~/catkin_ws/src 
+git clone https://github.com/ethz-asl/mav_trajectory_generation.git
+git clone https://github.com/ethz-asl/nlopt.git
+git clone https://github.com/ethz-asl/eigen_checks.git
+git clone https://github.com/ethz-asl/eigen_catkin.git
+git clone https://github.com/ethz-asl/glog_catkin.git
+git clone git@github.com:catkin/catkin_simple.git
+git clone https://github.com/ethz-asl/yaml_cpp_catkin.git
+cd ~/catkin_ws 
+catkin build
+```
+If there are any difficulties in installtion check out https://github.com/ethz-asl/mav_trajectory_generation/issues/64.
 ### ackermann_vehicle 
 
 ```shell
