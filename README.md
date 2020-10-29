@@ -65,10 +65,10 @@ catkin build
 After all the packages have been succesfully built, it is necessary to setup the configuration files in apriltag_ros and robot_localisation packages to work with my package. The files that need to be changed are given in the "Auxiliary Files" (https://github.com/abhip64/Agile-Quadrotor/tree/master/auxiliary_files) folder in Agile-Quadrotor package. Execute the following commands for updating the configuration files.
 
 ```shell
-cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/apriltag/continuous_detection.launch ~/catkin_ws/src/apriltag_ros/apriltag_ros/launch/continuous_detection.launch
-cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/apriltag/settings.yaml ~/catkin_ws/src/apriltag_ros/apriltag_ros/config/settings.yaml
-cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/apriltag/tags.yaml ~/catkin_ws/src/apriltag_ros/apriltag_ros/config/tags.yaml
-cp -f ~/catkin_ws/src/agile_quad/auxiliary_files/robot_localisation/ekf_template.yaml ~/catkin_ws/src/robot_localization/params/ekf_template.yaml
+cp -f ~/catkin_ws/src/agile_quadrotor/auxiliary_files/apriltag/continuous_detection.launch ~/catkin_ws/src/apriltag_ros/apriltag_ros/launch/continuous_detection.launch
+cp -f ~/catkin_ws/src/agile_quadrotor/auxiliary_files/apriltag/settings.yaml ~/catkin_ws/src/apriltag_ros/apriltag_ros/config/settings.yaml
+cp -f ~/catkin_ws/src/agile_quadrotor/auxiliary_files/apriltag/tags.yaml ~/catkin_ws/src/apriltag_ros/apriltag_ros/config/tags.yaml
+cp -f ~/catkin_ws/src/agile_quadrotor/auxiliary_files/robot_localisation/ekf_template.yaml ~/catkin_ws/src/robot_localization/params/ekf_template.yaml
 ```
 
 Also add this line to the bashrc file to ensure gazebo finds the sdf models of the quadrotor
